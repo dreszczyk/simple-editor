@@ -58,7 +58,12 @@ export class Editor extends PureComponent {
                 <Wrapper background={get(this.props, 'background.urls.custom', '')}>
                     {loader}
                     {this.props.images.map(image => (
-                        <CanvasImage key={image.imageId} image={image.imageData} />
+                        <CanvasImage
+                            key={image.imageId}
+                            {...image}
+                            onDrag={this.props.onDrag}
+                            onScale={this.props.onScale}
+                        />
                     ))}
                 </Wrapper>
             </FileDrop>

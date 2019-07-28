@@ -13,6 +13,10 @@ import {
     Button,
 } from './components';
 
+import {
+    updateCanvasImages,
+} from './utils';
+
 toast.configure({
     autoClose: 5000,
     draggable: false,
@@ -90,6 +94,15 @@ export default class App extends Component {
             canvasImages: [...state.canvasImages, imageData],
         }));
     }
+    onImageDrag = ({ imageId }, dragData) => {
+        this.setState({
+            canvasImages: updateCanvasImages(this.state.canvasImages, { imageId, ...dragData }),
+        })
+    }
+    onImageScale = (props, scaleData) => {
+        console.log('props', props)
+        console.log('scaleData', scaleData)
+    }
     render() {
         return (
             <Layout>
@@ -116,6 +129,8 @@ export default class App extends Component {
                         background={this.state.selectedBackground}
                         onAddImage={this.addImageToCanvas}
                         images={this.state.canvasImages}
+                        onDrag={this.onImageDrag}
+                        onScale={this.onImageScale}
                     />
                 </Layout.Editor>
                 <Layout.Sidebar>

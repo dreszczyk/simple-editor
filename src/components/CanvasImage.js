@@ -18,19 +18,23 @@ const RndImage = styled.img`
 
 export class CanvasImage extends PureComponent {
     render() {
-        const { image } = this.props;
+        const { imageData, imagex, imagey, imagewidth, imageheight } = this.props;
+        console.log('image', this.props);
+        
         return (
             <RndStyled
                 default={{
-                    x: 0,
-                    y: 0,
-                    width: 100,
-                    height: 100,
+                    x: imagex ? imagex : 0,
+                    y: imagey ? imagey : 0,
+                    width: imagewidth ? imagewidth : 100,
+                    height: imageheight ? imageheight : 100,
                 }}
                 bounds="parent"
                 lockAspectRatio
+                onDragStop={(ev, dragData) => this.props.onDrag(this.props, dragData)}
+                onResizeStop={(ev, scaleData2, scaleData3, scaleData, position) => this.props.onScale(this.props, position)}
             >
-                <RndImage src={image} alt="" />
+                <RndImage src={imageData} alt="" />
             </RndStyled>
         );
     }
