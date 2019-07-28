@@ -2,9 +2,8 @@ import React, { PureComponent } from 'react';
 import styled from 'styled-components';
 import { get } from 'lodash';
 import MoonLoader from 'react-spinners/MoonLoader';
-import FileDrop from 'react-file-drop';
-import { toast } from 'react-toastify';
 import { CanvasImage } from './CanvasImage'
+import { preloadImage, uniqId } from '../utils'
 
 const Wrapper = styled.div`
     margin: 20px auto 0;
@@ -22,33 +21,35 @@ const LoaderWrapper = styled.div`
 `;
 
 export class Editor extends PureComponent {
-    handleDrop = ([file]) => {
-        if (
-            ['image/png', 'image/jpg', 'image/jpeg'].includes(file.type)
-        ) {
-            const imageId = '_' + Math.random().toString(36).substr(2, 9);
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-                this.props.onAddImage({
-                    imageId,
-                    imageData: reader.result,
-                    imagey: 0,
-                    imagex: 0,
-                    imagewidth: 100,
-                    imageheight: 100,
-                })
-                toast(`Image added successfully`, { type: 'success' });
-            };
-            reader.onerror = function (error) {
-                toast(`Error: ${error}`, { type: 'error' });
-            };
-        } else {
-            toast(`File is not an image`, { type: 'warning' });
+    state = {
+        loadingPhoto: false,
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.loading && !this.props.loading) {
+            // preloading image
+            this.setState({
+                loadingPhoto: true,
+            }, () => {
+                preloadImage(
+                    this.props.background.urls.custom,
+                    this.finishPreloading
+                );
+            });
         }
     }
+    finishPreloading = () => {
+        this.setState({
+            loadingPhoto: false,
+        });
+    }
+    onDrop = (ev) => {
+        ev.preventDefault();
+        const imageData = JSON.parse(ev.dataTransfer.getData('logoData'));
+        imageData.imageId = uniqId();
+        this.props.addImageToActiveList(imageData);
+    }
     render() {
-        const loader = this.props.loading ? (
+        const loader = this.props.loading || this.state.loadingPhoto ? (
             <LoaderWrapper>
                 <div>
                     <MoonLoader size={40} loading={true}/>
@@ -56,21 +57,23 @@ export class Editor extends PureComponent {
             </LoaderWrapper>
         ) : '';
         return (
-            <FileDrop
-                onDrop={this.handleDrop}
+            <Wrapper
+                background={get(this.props, 'background.urls.custom', '')}
+                onDragOver={this.onDragOver}
+                onDrop={this.onDrop}
             >
-                <Wrapper background={get(this.props, 'background.urls.custom', '')}>
-                    {loader}
-                    {this.props.images.map(image => (
-                        <CanvasImage
-                            key={image.imageId}
-                            {...image}
-                            onDrag={this.props.onDrag}
-                            onScale={this.props.onScale}
-                        />
-                    ))}
-                </Wrapper>
-            </FileDrop>
+                {loader}
+                {this.props.images.map((image, idx) => (
+                    <CanvasImage
+                        key={image.imageId}
+                        imageIndex={idx}
+                        {...image}
+                        removeImageFromActiveList={this.props.removeImageFromActiveList}
+                        onDrag={this.props.onDrag}
+                        onScale={this.props.onScale}
+                    />
+                ))}
+            </Wrapper>
         );
     }
 }

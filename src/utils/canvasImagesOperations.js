@@ -1,4 +1,4 @@
-import { findIndex } from 'lodash';
+import { findIndex, filter } from 'lodash';
 
 export const updateCanvasImages = (changeType, images, update) => {
     const newImages = [...images];
@@ -14,4 +14,7 @@ export const updateCanvasImages = (changeType, images, update) => {
         newImages[imageDataIndex].imageheight = imageData.imageheight + update.height;
     }
     return newImages;
+}
+export const removeCanvasImage = (images, idx) => {
+    return filter(images, (image, index) => index !== idx);
 }

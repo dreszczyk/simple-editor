@@ -22,9 +22,9 @@ const ErrorText = styled.p`
     color: rgba(255, 100, 100, 1);
 `;
 
-export class ImagesList extends PureComponent {
+export class BackgroundsList extends PureComponent {
     render() {
-        const images = this.props.images.map(image => (
+        const backgrounds = this.props.backgrounds.map(image => (
             <Image key={`Image_${image.id}`} src={image.urls.custom} onClick={() => { this.props.onSelect(image.id) }} />
         ));
         const error = !this.props.loading ? (
@@ -34,8 +34,8 @@ export class ImagesList extends PureComponent {
             <Fragment>
                 <MoonLoader css={{ margin: '30px auto' }} color="blue" loading={this.props.loading}/>
                 {
-                    images.length && !this.props.loading
-                    ? images
+                    backgrounds.length && !this.props.loading
+                    ? backgrounds
                     : error
                 }
             </Fragment>

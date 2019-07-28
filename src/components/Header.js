@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const Header = styled.h1`
-    margin: 0;
+    margin: 0 20px;
     font-size: 30px;
     font-weight: 700;
 `;

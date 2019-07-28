@@ -9,12 +9,16 @@ const Layout = styled.div`
 `;
 
 Layout.Sidebar = styled.div`
-    box-sizing: border-box;
     width: 220px;
+`;
+
+Layout.SidebarContent = styled.div`
+    box-sizing: border-box;
     border: 1px solid rgba(0,0,0,0.1);
     border-radius: 3px;
     padding: 20px;
     height: fit-content;
+    margin-bottom: 30px;
 `;
 
 Layout.Editor = styled.div`

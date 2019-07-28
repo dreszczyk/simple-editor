@@ -5,6 +5,7 @@
   "dependencies": {
     "localstorage": "^1.0.1",
     "react": "^16.8.6",
+    "react-contexify": "^4.1.1",
     "react-dom": "^16.8.6",
     "react-file-drop": "^0.2.8",
     "react-rnd": "^10.0.0",
