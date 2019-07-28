@@ -33,6 +33,10 @@ export class Editor extends PureComponent {
                 this.props.onAddImage({
                     imageId,
                     imageData: reader.result,
+                    imagey: 0,
+                    imagex: 0,
+                    imagewidth: 100,
+                    imageheight: 100,
                 })
                 toast(`Image added successfully`, { type: 'success' });
             };

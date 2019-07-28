@@ -96,12 +96,13 @@ export default class App extends Component {
     }
     onImageDrag = ({ imageId }, dragData) => {
         this.setState({
-            canvasImages: updateCanvasImages(this.state.canvasImages, { imageId, ...dragData }),
+            canvasImages: updateCanvasImages('drag', this.state.canvasImages, { imageId, ...dragData }),
         })
     }
-    onImageScale = (props, scaleData) => {
-        console.log('props', props)
-        console.log('scaleData', scaleData)
+    onImageScale = ({ imageId }, scaleData) => {
+        this.setState({
+            canvasImages: updateCanvasImages('scale', this.state.canvasImages, { imageId, ...scaleData }),
+        })
     }
     render() {
         return (
