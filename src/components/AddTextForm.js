@@ -7,6 +7,20 @@ import { uniqId } from '../utils';
 const Wrapper = styled.div`
 `;
 
+const ColorSelector = styled.div`
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    margin-left: 5px;
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transition: 0.2s box-shadow;
+    &.selected {
+        box-shadow: inset 0 0 0 1px rgba(20, 20, 20, 0.8),
+                    inset 0 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+`;
+
 const TextInput = styled.textarea`
     margin-top: 25px;
     box-sizing: border-box;
@@ -30,7 +44,7 @@ const OptionsWrapper = styled.div`
 const defaultState = {
     fontFamily: 'Arial',
     fontSize: '20px',
-    color: 'black',
+    color: '#1f1f1f',
     value: '',
     texty: 0,
     textx: 0,
@@ -48,6 +62,14 @@ const fonts = [
     { name: 'Open Sans', fullName: 'Open Sans'},
 ];
 
+const colors = [
+    '#e41616',
+    '#51e416',
+    '#165de4',
+    '#efefef',
+    '#1f1f1f',
+];
+
 export class AddTextForm extends PureComponent {
     state = defaultState
     updateText = ({ target: { value }}) => {
@@ -58,6 +80,9 @@ export class AddTextForm extends PureComponent {
     }
     updateFont = (fontFamily) => {
         this.setState({ fontFamily })
+    }
+    updateColor = (color) => {
+        this.setState({ color })
     }
     handleAddText = () => {
         if (this.state.value !== '') {
@@ -100,6 +125,17 @@ export class AddTextForm extends PureComponent {
             </ButtonComponent>
         )
     }
+    getColorOptions = color => {
+        const selected = color === this.state.color;
+        return  (
+            <ColorSelector
+                className={selected ? 'selected' : ''}
+                key={`ButtonColorSelector_${color}`}
+                onClick={() => this.updateColor(color)}
+                style={{ backgroundColor: color }}
+            />
+        )
+    }
     render() {
         return (
             <Wrapper>
@@ -117,6 +153,9 @@ export class AddTextForm extends PureComponent {
                 </OptionsWrapper>
                 <OptionsWrapper>
                     {fonts.map(this.getFontFamilyButtons)}
+                </OptionsWrapper>
+                <OptionsWrapper>
+                    {colors.map(this.getColorOptions)}
                 </OptionsWrapper>
                 <Button.Primary
                     onClick={this.handleAddText}

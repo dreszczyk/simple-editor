@@ -35,6 +35,7 @@ export class CanvasPainter extends PureComponent {
                     });
                     this.props.imageData.texts.forEach(text => {
                         canvasContext.font = `${text.fontSize} ${text.fontFamily}`;
+                        canvasContext.fillStyle = text.color;  //<======= here
                         canvasContext.fillText(
                             text.value,
                             text.textx,
