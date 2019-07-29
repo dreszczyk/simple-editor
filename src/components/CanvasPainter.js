@@ -20,32 +20,36 @@ export class CanvasPainter extends PureComponent {
                 background.src = backgroundB64;
                 background.onload = () => {
                     canvasContext.drawImage(background, 0, 0);
-                    this.props.imageData.images.forEach(image => {
-                        const proxyImage = new Image();
-                        proxyImage.onload = () => {
-                            canvasContext.drawImage(
-                                proxyImage,
-                                image.imagex,
-                                image.imagey,
-                                image.imagewidth,
-                                image.imageheight
-                            );
-                        };
-                        proxyImage.src = image.imageData;
+                    const promises = this.props.imageData.images.map(image => {
+                        return new Promise((resolve) => {
+                            const proxyImage = new Image();
+                            proxyImage.onload = () => {
+                                canvasContext.drawImage(
+                                    proxyImage,
+                                    image.imagex,
+                                    image.imagey,
+                                    image.imagewidth,
+                                    image.imageheight
+                                );
+                                resolve();
+                            };
+                            proxyImage.src = image.imageData;
+                        })
                     });
                     this.props.imageData.texts.forEach(text => {
                         canvasContext.font = `${text.fontSize} ${text.fontFamily}`;
-                        canvasContext.fillStyle = text.color;  //<======= here
+                        canvasContext.fillStyle = text.color;
                         canvasContext.fillText(
                             text.value,
                             text.textx,
                             text.texty
                         );
                     });
-                    
-                    link.setAttribute('download', `YourSimpleProject${uniqId()}.png`);
-                    link.setAttribute('href', canvasElement.toDataURL());
-                    link.click();
+                    Promise.all(promises).then(() => {
+                        link.setAttribute('download', `YourSimpleProject${uniqId()}.png`);
+                        link.setAttribute('href', canvasElement.toDataURL());
+                        link.click();
+                    })
                 }
             }
         )
