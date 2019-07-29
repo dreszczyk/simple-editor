@@ -6,16 +6,14 @@ import {
 } from '../utils'
 
 export class CanvasPainter extends PureComponent {
-    state = {
-        canvasElement: {},
-    }
-    componentDidUpdate() {
+    paintAndSave = () => {
         convertImgToBase64URL(
             this.props.imageData.background,
             backgroundB64 => {
                 const canvasElement = document.createElement('canvas');
                 const canvasContext = canvasElement.getContext('2d');
                 const background = new Image();
+                const link = document.createElement('a');
                 canvasElement.width = 400;
                 canvasElement.height = 400;
                 canvasContext.textBaseline = 'top';
@@ -43,9 +41,10 @@ export class CanvasPainter extends PureComponent {
                             text.texty
                         );
                     });
-                    this.setState({
-                        canvasElement,
-                    })
+                    
+                    link.setAttribute('download', `YourSimpleProject${uniqId()}.png`);
+                    link.setAttribute('href', canvasElement.toDataURL());
+                    link.click();
                 }
             }
         )
@@ -53,14 +52,7 @@ export class CanvasPainter extends PureComponent {
     render() {
         return (
             <div style={{ textAlign: 'center', marginTop: '30px' }}>
-                <Button
-                    onClick={() => {
-                        var link = document.createElement('a');
-                        link.setAttribute('download', `YourSimpleProject${uniqId()}.png`);
-                        link.setAttribute('href', this.state.canvasElement.toDataURL());
-                        link.click();
-                    }}
-                >
+                <Button onClick={this.paintAndSave}>
                     Download as image 
                 </Button>
             </div>
