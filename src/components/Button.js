@@ -12,7 +12,7 @@ const Button = styled.button`
     margin-bottom: 10px;
 `;
 
-Button.primary = styled(Button)`
+Button.Primary = styled(Button)`
     background-color: #0080ff;
     color: white;
 `;

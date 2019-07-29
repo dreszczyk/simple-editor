@@ -5,3 +5,7 @@ export { LogoList } from './LogoList';
 export { Editor } from './Editor';
 export { LogoDrop } from './LogoDrop';
 export { Button } from './Button';
+export { AddTextForm } from './AddTextForm';
+export { CanvasText } from './CanvasText';
+export { CanvasImage } from './CanvasImage';
+export { CanvasPainter } from './CanvasPainter';

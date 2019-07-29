@@ -14,11 +14,12 @@ import {
     Button,
     LogoList,
     LogoDrop,
+    AddTextForm,
 } from './components';
 
 import {
-    updateCanvasImages,
-    removeCanvasImage,
+    updateCanvas,
+    removeFromCanvas,
 } from './utils';
 
 toast.configure({
@@ -47,6 +48,7 @@ export default class App extends Component {
         loadingBackground: false,
         canvasImages: [],
         activeCanvasImages: [],
+        activeCanvasTexts: [],
     }
     componentDidMount() {
         if (SEStorage.has('appstate') && get(SEStorage.get('appstate'), '[1].backgroundsList.length', false)) {
@@ -79,16 +81,27 @@ export default class App extends Component {
     selectBackground = (id) => {
         this.setState({
             loadingBackground: true,
-            selectedBackground: {},
         })
         unsplash.photos
             .getPhoto(id, 400, 400 )
             .then(toJson)
             .then(selectedBackground => {
-                this.setState({
-                    loadingBackground: false,
-                    selectedBackground,
-                });
+                if (!selectedBackground.errors) {
+                    this.setState({
+                        loadingBackground: false,
+                        selectedBackground,
+                    });
+                    toast(`Background loaded`, { type: 'success' });
+                } else {
+                    toast(
+                        `Error: ${selectedBackground.errors.join(' ')}`,
+                        { type: 'error' },
+                    );
+                    this.setState({
+                        loadingBackground: false,
+                        selectedBackground: emptyImage,
+                    });
+                }
             });
     }
     // adding image from desktop to sidebar
@@ -97,37 +110,64 @@ export default class App extends Component {
             canvasImages: [...state.canvasImages, imageData],
         }));
     }
+    removeImageFromList = (idx) => {
+        this.setState((state) => ({
+            canvasImages: removeFromCanvas(state.canvasImages, idx)
+        }))
+    }
     // adding image from sidebar to canvas
     addImageToActiveList = (imageData) => {
         this.setState((state) => ({
             activeCanvasImages: [...state.activeCanvasImages, imageData],
         }));
     }
-    // removing image from canvas (contesxt menu)
+    // removing image from canvas (context menu)
     removeImageFromActiveList = (idx) => {
         this.setState((state) => ({
-            activeCanvasImages: removeCanvasImage(state.activeCanvasImages, idx)
-        }), () => {
-            console.log('this.state', this.state)
-        });
+            activeCanvasImages: removeFromCanvas(state.activeCanvasImages, idx)
+        }));
     }
     // handle image drag on canvas
     onImageDrag = ({ imageId }, dragData) => {
         this.setState({
-            activeCanvasImages: updateCanvasImages('drag', this.state.activeCanvasImages, { imageId, ...dragData }),
+            activeCanvasImages: updateCanvas(
+                'drag',
+                this.state.activeCanvasImages,
+                { imageId, ...dragData }
+            ),
         })
     }
     // handle scale drag on canvas
     onImageScale = ({ imageId }, scaleData) => {
         this.setState({
-            activeCanvasImages: updateCanvasImages('scale', this.state.activeCanvasImages, { imageId, ...scaleData }),
+            activeCanvasImages: updateCanvas(
+                'scale',
+                this.state.activeCanvasImages,
+                { imageId, ...scaleData }
+            ),
         })
     }
-
-    removeImageFromList = (idx) => {
+    // adding text from editor to canvas
+    addTextToCanvas = (textData) => {
         this.setState((state) => ({
-            canvasImages: removeCanvasImage(state.canvasImages, idx)
+            activeCanvasTexts: [...state.activeCanvasTexts, textData]
         }))
+    }
+    // removing text from canvas (context menu)
+    removeTextFromActiveList = (idx) => {
+        this.setState((state) => ({
+            activeCanvasTexts: removeFromCanvas(state.activeCanvasTexts, idx)
+        }));
+    }
+    // handle text drag on canvas
+    onTextDrag = ({ textId }, dragData) => {
+        this.setState({
+            activeCanvasTexts: updateCanvas(
+                'drag-text',
+                this.state.activeCanvasTexts,
+                { textId, ...dragData }
+            ),
+        })
     }
     render() {
         return (
@@ -141,9 +181,9 @@ export default class App extends Component {
                             loading={this.state.loadingImages}
                         />
                         <div style={{ textAlign: 'center', marginTop: '30px' }}>
-                            <Button onClick={this.getBackgrounds}>
+                            <Button.Primary onClick={this.getBackgrounds}>
                                 New images
-                            </Button>
+                            </Button.Primary>
                             <Button onClick={this.resetBackground}>
                                 Clear background
                             </Button>
@@ -156,10 +196,14 @@ export default class App extends Component {
                         loading={this.state.loadingBackground}
                         background={this.state.selectedBackground}
                         images={this.state.activeCanvasImages}
-                        onDrag={this.onImageDrag}
-                        onScale={this.onImageScale}
+                        texts={this.state.activeCanvasTexts}
+                        onImageDrag={this.onImageDrag}
+                        onImageScale={this.onImageScale}
+                        onTextDrag={this.onTextDrag}
                         addImageToActiveList={this.addImageToActiveList}
                         removeImageFromActiveList={this.removeImageFromActiveList}
+                        addTextToActiveList={this.addTextToCanvas}
+                        removeTextFromActiveList={this.removeTextFromActiveList}
                     />
                 </Layout.Editor>
                 <Layout.Sidebar>
@@ -173,6 +217,9 @@ export default class App extends Component {
                     </Layout.SidebarContent>
                     <Layout.SidebarContent>
                         <Header.Small>Add Text</Header.Small>
+                        <AddTextForm
+                            onAddText={this.addTextToCanvas}
+                        />
                     </Layout.SidebarContent>
                 </Layout.Sidebar>
             </Layout>

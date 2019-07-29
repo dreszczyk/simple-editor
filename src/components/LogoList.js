@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import styled from 'styled-components';
+import { Button } from './Button';
 
 const LogosWrapper = styled.div`
     display: flex;
@@ -35,7 +36,7 @@ const Logo = styled.div`
     cursor: move;
 `;
 
-const RemoveButton = styled.button`
+const RemoveButton = styled(Button)`
     font-size: 9px;
     border-radius: 5px;
     border: none;

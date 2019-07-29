@@ -4,7 +4,9 @@ import { get } from 'lodash';
 import { Menu, Item, MenuProvider } from 'react-contexify';
 import MoonLoader from 'react-spinners/MoonLoader';
 import { CanvasImage } from './CanvasImage'
-import { preloadImage, uniqId } from '../utils'
+import { preloadImage, uniqId, throttleEventHandler } from '../utils'
+import { CanvasText } from './CanvasText';
+import { CanvasPainter } from './CanvasPainter';
 
 const Wrapper = styled.div`
     margin: 20px auto 0;
@@ -24,6 +26,8 @@ const LoaderWrapper = styled.div`
 export class Editor extends PureComponent {
     state = {
         loadingPhoto: false,
+        dropPositionX: 0,
+        dropPositionY: 0,
     }
     componentDidUpdate(prevProps) {
         if (prevProps.loading && !this.props.loading) {
@@ -45,7 +49,10 @@ export class Editor extends PureComponent {
     }
     onDrop = (ev) => {
         ev.preventDefault();
-        this.addCopyOfImage(JSON.parse(ev.dataTransfer.getData('logoData')))
+        const imageData = JSON.parse(ev.dataTransfer.getData('logoData'));
+        imageData.imagex = this.state.dropPositionX;
+        imageData.imagey = this.state.dropPositionY;
+        this.addCopyOfImage(imageData)
     }
     duplicateImage = (imageData) => {
         imageData.imagex = imageData.imagex + 10;
@@ -57,6 +64,53 @@ export class Editor extends PureComponent {
         newImage.imageId = uniqId();
         this.props.addImageToActiveList(newImage);
     }
+    duplicateText = (textData) => {
+        textData.textx = textData.textx + 10;
+        textData.texty = textData.texty + 10;
+        this.addCopyOfText(textData);
+    }
+    addCopyOfText = (textData) => {
+        const newText = Object.assign({}, textData);
+        newText.textId = uniqId();
+        this.props.addTextToActiveList(newText);
+    }
+    mapImages = (image, idx) => (
+        <Fragment key={image.imageId}>
+            <Menu id={`Menu_${image.imageId}`}>
+                <Item onClick={() => this.props.removeImageFromActiveList(idx)}>
+                    Remove image
+                </Item>
+                <Item onClick={() => this.duplicateImage(image)}>
+                    Duplicate image
+                </Item>
+            </Menu>
+            <MenuProvider id={`Menu_${image.imageId}`}>
+                <CanvasImage
+                    {...image}
+                    onDrag={this.props.onImageDrag}
+                    onScale={this.props.onImageScale}
+                />
+            </MenuProvider>
+        </Fragment>
+    )
+    mapTexts = (text, idx) => (
+        <Fragment key={text.textId}>
+            <Menu id={`Menu_${text.textId}`}>
+                <Item onClick={() => this.props.removeTextFromActiveList(idx)}>
+                    Remove text
+                </Item>
+                <Item onClick={() => this.duplicateText(text)}>
+                    Duplicate text
+                </Item>
+            </Menu>
+            <MenuProvider id={`Menu_${text.textId}`}>
+                <CanvasText
+                    {...text}
+                    onDrag={this.props.onTextDrag}
+                />
+            </MenuProvider>
+        </Fragment>
+    )
     render() {
         const loader = this.props.loading || this.state.loadingPhoto ? (
             <LoaderWrapper>
@@ -65,37 +119,38 @@ export class Editor extends PureComponent {
                 </div>
             </LoaderWrapper>
         ) : '';
+        const backgroundImage = get(this.props, 'background.urls.custom', '');
         return (
-            <Wrapper
-                id="editor"
-                background={get(this.props, 'background.urls.custom', '')}
-                onDrop={this.onDrop}
-                // onMouseMove={(ev) => {
-                //     console.log('ev', ev);
-                //     console.log('ev.movementX', ev.movementX);
-                // }}
-            >
-                {loader}
-                {this.props.images.map((image, idx) => (
-                    <Fragment key={image.imageId}>
-                        <Menu id={`Menu_${image.imageId}`}>
-                            <Item onClick={() => this.props.removeImageFromActiveList(idx)}>
-                                Remove image
-                            </Item>
-                            <Item onClick={() => this.duplicateImage(image)}>
-                                Duplicate image
-                            </Item>
-                        </Menu>
-                        <MenuProvider id={`Menu_${image.imageId}`}>
-                            <CanvasImage
-                                {...image}
-                                onDrag={this.props.onDrag}
-                                onScale={this.props.onScale}
-                            />
-                        </MenuProvider>
-                    </Fragment>
-                ))}
-            </Wrapper>
+            <Fragment>
+                <Wrapper
+                    id="editor"
+                    background={backgroundImage}
+                    onDrop={this.onDrop}
+                    onDragOver={
+                        throttleEventHandler((ev) => {
+                            ev.persist();
+                            const editor = document.getElementById('editor'); 
+                            const posX = ev.pageX - editor.offsetLeft;
+                            const posY = ev.pageY - editor.offsetTop;
+                            this.setState({
+                                dropPositionX: posX - 50, // default image is 100x100px
+                                dropPositionY: posY - 50,
+                            })
+                        }, 100)
+                    }
+                >
+                    {loader}
+                    {this.props.images.map(this.mapImages)}
+                    {this.props.texts.map(this.mapTexts)}
+                </Wrapper>
+                <CanvasPainter
+                    imageData={{
+                        background: backgroundImage,
+                        images: this.props.images,
+                        texts: this.props.texts,
+                    }}
+                />
+            </Fragment>
         );
     }
 }

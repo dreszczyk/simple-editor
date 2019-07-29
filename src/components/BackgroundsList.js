@@ -25,7 +25,11 @@ const ErrorText = styled.p`
 export class BackgroundsList extends PureComponent {
     render() {
         const backgrounds = this.props.backgrounds.map(image => (
-            <Image key={`Image_${image.id}`} src={image.urls.custom} onClick={() => { this.props.onSelect(image.id) }} />
+            <Image
+                key={`Image_${image.id}`}
+                src={image.urls.custom}
+                onClick={() => { this.props.onSelect(image.id) }}
+            />
         ));
         const error = !this.props.loading ? (
             <ErrorText>No internet connection or API error.</ErrorText>
