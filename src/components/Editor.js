@@ -1,6 +1,7 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import styled from 'styled-components';
 import { get } from 'lodash';
+import { Menu, Item, MenuProvider } from 'react-contexify';
 import MoonLoader from 'react-spinners/MoonLoader';
 import { CanvasImage } from './CanvasImage'
 import { preloadImage, uniqId } from '../utils'
@@ -44,9 +45,17 @@ export class Editor extends PureComponent {
     }
     onDrop = (ev) => {
         ev.preventDefault();
-        const imageData = JSON.parse(ev.dataTransfer.getData('logoData'));
-        imageData.imageId = uniqId();
-        this.props.addImageToActiveList(imageData);
+        this.addCopyOfImage(JSON.parse(ev.dataTransfer.getData('logoData')))
+    }
+    duplicateImage = (imageData) => {
+        imageData.imagex = imageData.imagex + 10;
+        imageData.imagey = imageData.imagey + 10;
+        this.addCopyOfImage(imageData);
+    }
+    addCopyOfImage = (imageData) => {
+        const newImage = Object.assign({}, imageData);
+        newImage.imageId = uniqId();
+        this.props.addImageToActiveList(newImage);
     }
     render() {
         const loader = this.props.loading || this.state.loadingPhoto ? (
@@ -58,20 +67,33 @@ export class Editor extends PureComponent {
         ) : '';
         return (
             <Wrapper
+                id="editor"
                 background={get(this.props, 'background.urls.custom', '')}
-                onDragOver={this.onDragOver}
                 onDrop={this.onDrop}
+                // onMouseMove={(ev) => {
+                //     console.log('ev', ev);
+                //     console.log('ev.movementX', ev.movementX);
+                // }}
             >
                 {loader}
                 {this.props.images.map((image, idx) => (
-                    <CanvasImage
-                        key={image.imageId}
-                        imageIndex={idx}
-                        {...image}
-                        removeImageFromActiveList={this.props.removeImageFromActiveList}
-                        onDrag={this.props.onDrag}
-                        onScale={this.props.onScale}
-                    />
+                    <Fragment key={image.imageId}>
+                        <Menu id={`Menu_${image.imageId}`}>
+                            <Item onClick={() => this.props.removeImageFromActiveList(idx)}>
+                                Remove image
+                            </Item>
+                            <Item onClick={() => this.duplicateImage(image)}>
+                                Duplicate image
+                            </Item>
+                        </Menu>
+                        <MenuProvider id={`Menu_${image.imageId}`}>
+                            <CanvasImage
+                                {...image}
+                                onDrag={this.props.onDrag}
+                                onScale={this.props.onScale}
+                            />
+                        </MenuProvider>
+                    </Fragment>
                 ))}
             </Wrapper>
         );

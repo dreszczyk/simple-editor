@@ -4,6 +4,7 @@ import LocalStorage from 'localstorage';
 import { toast } from 'react-toastify';
 import { get } from 'lodash';
 import 'react-toastify/dist/ReactToastify.css';
+import 'react-contexify/dist/ReactContexify.min.css';
 
 import {
     Header,
@@ -103,12 +104,12 @@ export default class App extends Component {
         }));
     }
     // removing image from canvas (contesxt menu)
-    removeImageFromActiveList = (event, { idx }) => {
-        console.log('removeImageFromActiveList', idx);
-        
+    removeImageFromActiveList = (idx) => {
         this.setState((state) => ({
             activeCanvasImages: removeCanvasImage(state.activeCanvasImages, idx)
-        }))
+        }), () => {
+            console.log('this.state', this.state)
+        });
     }
     // handle image drag on canvas
     onImageDrag = ({ imageId }, dragData) => {

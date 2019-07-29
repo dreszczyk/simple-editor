@@ -1,4 +1,4 @@
-import React, { PureComponent, Fragment } from 'react';
+import React, { PureComponent } from 'react';
 import { Rnd } from 'react-rnd';
 import styled from 'styled-components';
 
@@ -18,7 +18,7 @@ const RndImage = styled.img`
 
 export class CanvasImage extends PureComponent {
     render() {
-        const { imageData, imagex, imagey, imagewidth, imageheight, imageID, imageIndex } = this.props;
+        const { imageData, imagex, imagey, imagewidth, imageheight } = this.props;
         return (
             <RndStyled
                 default={{
@@ -27,7 +27,7 @@ export class CanvasImage extends PureComponent {
                     width: imagewidth,
                     height: imageheight,
                 }}
-                bounds="parent"
+                bounds="#editor"
                 lockAspectRatio
                 onDragStop={(ev, dragData) => this.props.onDrag(this.props, dragData)}
                 onResizeStop={(ev, scaleData2, scaleData3, scaleData) => this.props.onScale(this.props, scaleData)}
