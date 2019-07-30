@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/simple-editor/static/css/main.8e3f3edd.chunk.css",
+    "main.js": "/simple-editor/static/js/main.c158992f.chunk.js",
+    "main.js.map": "/simple-editor/static/js/main.c158992f.chunk.js.map",
+    "runtime~main.js": "/simple-editor/static/js/runtime~main.d4823f31.js",
+    "runtime~main.js.map": "/simple-editor/static/js/runtime~main.d4823f31.js.map",
+    "static/css/2.5a75ea7a.chunk.css": "/simple-editor/static/css/2.5a75ea7a.chunk.css",
+    "static/js/2.02494b29.chunk.js": "/simple-editor/static/js/2.02494b29.chunk.js",
+    "static/js/2.02494b29.chunk.js.map": "/simple-editor/static/js/2.02494b29.chunk.js.map",
+    "index.html": "/simple-editor/index.html",
+    "precache-manifest.94fe919ac4eaa12a0883a03691dd280f.js": "/simple-editor/precache-manifest.94fe919ac4eaa12a0883a03691dd280f.js",
+    "service-worker.js": "/simple-editor/service-worker.js",
+    "static/css/2.5a75ea7a.chunk.css.map": "/simple-editor/static/css/2.5a75ea7a.chunk.css.map",
+    "static/css/main.8e3f3edd.chunk.css.map": "/simple-editor/static/css/main.8e3f3edd.chunk.css.map"
+  }
+}
