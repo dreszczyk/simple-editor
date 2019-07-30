@@ -37,5 +37,6 @@
   },
   "devDependencies": {
     "styled-components": "^4.3.2"
-  }
+  },
+  "homepage": "http://plamka.net/simple-editor"
 }

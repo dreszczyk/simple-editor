@@ -20,6 +20,7 @@ import {
 import {
     updateCanvas,
     removeFromCanvas,
+    sampleData,
 } from './utils';
 
 toast.configure({
@@ -59,6 +60,9 @@ export default class App extends Component {
     }
     componentDidUpdate () {
         SEStorage.put('appstate', this.state);
+    }
+    loadSampleData = () => {
+        this.setState(sampleData);
     }
     getBackgrounds = () => {
         this.setState({
@@ -220,6 +224,14 @@ export default class App extends Component {
                         <AddTextForm
                             onAddText={this.addTextToCanvas}
                         />
+                    </Layout.SidebarContent>
+                    <Layout.SidebarContent>
+                        <Button
+                            onClick={this.loadSampleData}
+                            style={{ width: '100%' }}
+                        >
+                            Load sample data
+                        </Button>
                     </Layout.SidebarContent>
                 </Layout.Sidebar>
             </Layout>

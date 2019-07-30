@@ -57,9 +57,9 @@ export class CanvasPainter extends PureComponent {
     render() {
         return (
             <div style={{ textAlign: 'center', marginTop: '30px' }}>
-                <Button onClick={this.paintAndSave}>
-                    Download as image 
-                </Button>
+                <Button.Primary onClick={this.paintAndSave}>
+                    Download as image
+                </Button.Primary>
             </div>
         );
     }
